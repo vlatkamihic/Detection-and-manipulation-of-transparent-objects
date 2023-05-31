@@ -1,0 +1,2 @@
+cleargrasp
+-DCATKIN_DEVEL_PREFIX=/home/robot/cleargrasp/live_demo/live_demo_ws/devel -DCMAKE_INSTALL_PREFIX=/home/robot/cleargrasp/live_demo/live_demo_ws/install -G Unix Makefiles
