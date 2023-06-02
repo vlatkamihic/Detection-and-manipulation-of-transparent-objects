@@ -12,7 +12,7 @@
 5. Run <code>roscore</code>
 6. In another terminal start the camera: 
 <code>roslaunch realsense2_camera rs_camera.launch enable_pointcloud:=true depth_width:=640 depth_height:=480 depth_fps:=15 color_width:=640 color_height:=480 color_fps:=15 align_depth:=true</code>
-7. Open terminal in src folder(...cleargrasp/live_demo/live_demo_ws/src/cleargrasp/src) of live_demo and run these commands:
+7. Open terminal in workspace(...cleargrasp/live_demo/live_demo_ws/) of live_demo and run these commands:
 ```
 source devel/setup.bash
 export PYTHONPATH="$PYTHONPATH:/home/robot/cleargrasp"
