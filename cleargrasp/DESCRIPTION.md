@@ -27,4 +27,28 @@ source devel/setup.bash
 export PYTHONPATH="$PYTHONPATH:/home/robot/cleargrasp"
 rosrun cleargrasp live_demo.py
 ```
-8. 
+8. Once you run the programm you have to press key 'c' to capture image and for it to be processed. 
+
+   ![image](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/assets/78767436/17235897-6f3d-41c3-966f-99a6609e9211)
+
+   As a result you get a grid image containing images of:
+      - First row:
+        - input_image,
+        - surface_normals_rgb,
+        - outlines_rgb,
+        - occlusion_weight_rgb,
+        - masked_img
+      - Second row:
+        - orig_input_depth_rgb,
+        - input_depth_rgb,
+        - output_depth_rgb, 
+        - mask_rgb, 
+        - mask_valid_region_3d
+
+![image](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/assets/78767436/0f0ddc08-fefb-42b6-98bd-1bed3d3e7d27)
+
+<p align="center">
+  Result image
+</p>
+
+9. For the whole process to run once again you have to press any key on any opened image. After this you can once again repeat the step number 8.
