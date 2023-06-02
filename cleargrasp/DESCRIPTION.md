@@ -1,3 +1,12 @@
+## ClearGrasp api modifications
+
+- depth_completion_api.py - Exposes class containing API for running depth completion using depth2depth module (external C++ executable).
+depth2depth is taken from the project DeepCompletion. See: http://deepcompletion.cs.princeton.edu/
+- inference_models.py - Class to run Inference of the Outlines Prediction Model
+- utils.py - Misc functions like functions for reading and saving EXR images using OpenEXR, saving pointclouds, etc.
+
+These scripts are used in live_demo.py file!
+
 ## ClearGrasp live demo modifications
 
 - live_demo_ws - ROS workspace for capturing images from Lidar camera and saving cleargrasp network output
