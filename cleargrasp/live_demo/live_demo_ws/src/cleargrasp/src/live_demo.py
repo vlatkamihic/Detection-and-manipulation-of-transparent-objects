@@ -6,7 +6,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 print(dir_path)
 
-
+import errno
 import argparse
 import glob
 import os
@@ -142,8 +142,24 @@ class ClearGraspNode:
         color_img = rgb_image
         input_depth = depth_image.astype(np.float32)
         
-        
+        # examples_dir = 'Example' + str(self.capture_num)
+        # path = os.path.join('/home/robot/Detekcija-i-manipulacija-transparentnih-objekata/Examples', examples_dir)
+        # try:
+        #         os.mkdir(path)
+        # except OSError as exc:
+        #     if exc.errno != errno.EEXIST:
+        #         raise
+        #     pass
+
+        # # Saving images
+        # cv2.imwrite(os.path.join(path , 'input_rgb.jpg'), rgb_image)
+        # cv2.imwrite(os.path.join(path , 'input_depth.jpg'), input_depth)
+
         cv2.imshow('Live Demo', rgb_image)
+        cv2.imshow('Live Demo Depth', depth_image)
+        
+        
+
         # rospy.sleep(25.) 
         # cv2.destroyAllWindows()
         keypress = cv2.waitKey(10) & 0xFF
@@ -171,7 +187,8 @@ class ClearGraspNode:
             occlusion_weight = self.depthcomplete.occlusion_weight
             occlusion_weight_rgb = self.depthcomplete.occlusion_weight_rgb
             outlines_rgb = self.depthcomplete.outlines_rgb
-
+            mask = self.depthcomplete.mask_predicted
+            mask_rgb = cv2.cvtColor(mask,cv2.COLOR_GRAY2RGB)
             # Display Results in Window
             input_depth_mapped = utils.depth2rgb(input_depth, min_depth=self.config.depthVisualization.minDepth,
                                                 max_depth=self.config.depthVisualization.maxDepth,
@@ -190,10 +207,13 @@ class ClearGraspNode:
 
             grid_image1 = np.concatenate((color_img, surface_normals_rgb, outlines_rgb, occlusion_weight_rgb), 1)
             grid_image2 = np.concatenate((input_depth_mapped, output_depth_mapped, filtered_output_depth_mapped,
-                                        np.zeros(color_img.shape, dtype=color_img.dtype)), 1)
+                                        mask_rgb), 1)
             grid_image = np.concatenate((grid_image1, grid_image2), 0)
+            
+            # Saving grid
+            # cv2.imwrite(os.path.join(path , 'result_grid.jpg'), grid_image)
 
-            cv2.imshow('Live Demo Capture', grid_image)
+            # cv2.imshow('Live Demo Capture', grid_image)
             cv2.waitKey(0)
             # Save captured data to config.captures_dir
             self.depthcomplete.store_depth_completion_outputs(self.captures_dir,

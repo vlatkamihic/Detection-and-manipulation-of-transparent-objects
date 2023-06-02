@@ -1,0 +1,12 @@
+<launch>
+  <include file="$(find realsense2_camera)/rs_camera.launch" >
+     <param name="enable_pointcloud" type="bool" value="true" />
+     <param name="depth_width" type="int" value="640" />
+     <param name="depth_height" type="int" value="480" />
+     <param name="depth_fps" type="int" value="15" />
+     <param name="color_width" type="int" value="640" />
+     <param name="color_height" type="int" value="480" />
+     <param name="color_fps" type="int" value="15" />
+     <param name="align_depth" type="bool" value="true" />
+  <include/>
+</launch>
