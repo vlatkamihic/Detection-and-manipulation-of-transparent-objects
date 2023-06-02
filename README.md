@@ -1,5 +1,6 @@
-# Detekcija-i-manipulacija-transparentnih-objekata
-Određivanje trodimenzionalnog oblika i položaja transparentnih objekata u svrhu robotske manipulacije
+# Detection-and-manipulation-of-transparent-objects
+
+Determining the three-dimensional shape and position of transparent objects for the purpose of robotic manipulation
 
 To clone this repo:
 <code>git clone https://PersonalAccessToken@github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata</code>
