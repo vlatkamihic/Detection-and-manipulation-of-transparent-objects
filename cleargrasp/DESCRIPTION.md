@@ -1,7 +1,7 @@
 ## ClearGrasp api modifications
 
 - depth_completion_api.py - Exposes class containing API for running depth completion using depth2depth module (external C++ executable).
-depth2depth is taken from the project DeepCompletion. See: http://deepcompletion.cs.princeton.edu/
+depth2depth is taken from the project DeepCompletion. See: [http://deepcompletion.cs.princeton.edu/](http://deepcompletion.cs.princeton.edu/)
 - inference_models.py - Class to run Inference of the Outlines Prediction Model
 - utils.py - Misc functions like functions for reading and saving EXR images using OpenEXR, saving pointclouds, etc.
 
