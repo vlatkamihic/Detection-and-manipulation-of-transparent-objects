@@ -12,7 +12,7 @@ These scripts are used in live_demo.py file!
 - live_demo_ws - ROS workspace for capturing images from Lidar camera and saving cleargrasp network output
 - config - configuration file needed for running live_demo.py file
 
-### Running the programm
+### Running the programm manually
 
 1. Clone repo: https://github.com/Shreeyak/cleargrasp
 2. Settup environment so you can run live demo on your local machine
@@ -52,3 +52,5 @@ rosrun cleargrasp live_demo.py
 </p>
 
 9. For the whole process to run once again you have to press any key on any opened image. After this you can once again repeat the step number 8.
+
+### Running the programm with launch file
