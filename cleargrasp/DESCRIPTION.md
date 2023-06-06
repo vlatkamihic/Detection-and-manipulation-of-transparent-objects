@@ -29,7 +29,11 @@ rosrun cleargrasp live_demo.py
 ```
 8. Once you run the programm you have to press key 'c' to capture image and for it to be processed. 
 
-   ![image](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/assets/78767436/17235897-6f3d-41c3-966f-99a6609e9211)
+![image](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/assets/78767436/17235897-6f3d-41c3-966f-99a6609e9211)
+
+<p align="center">
+  Result image
+</p>
 
    As a result you get a grid image containing images of:
       - First row:
