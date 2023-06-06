@@ -32,7 +32,7 @@ rosrun cleargrasp live_demo.py
 ![image](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/assets/78767436/17235897-6f3d-41c3-966f-99a6609e9211)
 
 <p align="center">
-  Result image
+  Live Demo - RGB, depth
 </p>
 
    As a result you get a grid image containing images of:
