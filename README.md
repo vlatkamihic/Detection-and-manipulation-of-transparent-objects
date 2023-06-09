@@ -10,3 +10,8 @@ To clone this repo:
 The network is used for 3D transparent object detection which will be used for their manipulation.
 ClearGrasp network model is updated and changed so it works with RealSense Lidar L515 camera and ROS.
 Changes made to the ClearGrasp repo are placed into to [cleargrasp](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/tree/main/cleargrasp/live_demo) folder.
+
+TO DO:
+- normala stola
+- maknuti outliere
+- 
