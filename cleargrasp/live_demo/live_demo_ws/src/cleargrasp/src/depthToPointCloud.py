@@ -3,38 +3,32 @@ import cv2
 import numpy as np
 import copy
 
-FX_DEPTH = 570
-FY_DEPTH = 314
-CX_DEPTH = 320
-CY_DEPTH = 240
+FX_DEPTH = 597.9033203125
+FY_DEPTH = 598.47998046875
+CX_DEPTH = 323.8436584472656
+CY_DEPTH = 236.32774353027344
 
-def convert_to_point_cloud(rgbd_image):
-    global FX_DEPTH, FY_DEPTH, CX_DEPTH, CY_DEPTH
-    # Konvertujte dubinsku sliku u oblak tačaka
-    camera_intrinsic = o3d.camera.PinholeCameraIntrinsic(640, 480, FX_DEPTH, FY_DEPTH, CX_DEPTH, CY_DEPTH)
-    # Convert the RGBD image to an Open3D RGBDImage object
-    rgbd_image_o3d = o3d.geometry.RGBDImage.create_from_color_and_depth(rgbd_image, rgbd_image)
-    # rgbd_image = o3d.geometry.RGBDImage.create_from_color_and_depth(color_image, depth_image, depth_scale=1000.0, convert_rgb_to_intensity=False)
-    point_cloud = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image_o3d, camera_intrinsic)
+def display_inlier_outlier(cloud, ind):
+    inlier_cloud = cloud.select_by_index(ind)
+    outlier_cloud = cloud.select_by_index(ind, invert=True)
 
-    return point_cloud
+    print("Showing outliers (red) and inliers (gray): ")
+    outlier_cloud.paint_uniform_color([1, 0, 0])
+    inlier_cloud.paint_uniform_color([0.8, 0.8, 0.8])
+    o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud],
+                                      zoom=0.3412,
+                                      front=[0.4257, -0.2125, -0.8795],
+                                      lookat=[2.6172, 2.0475, 1.532],
+                                      up=[-0.0694, -0.9768, 0.2024])
 
 if __name__ == '__main__':
 
-    # # Read color image
-    # color_image = cv2.imread("/home/vlatka/Desktop/Diplomski/exp-004/input-image/000000000-rgb.png")
+    point_cloud = o3d.io.read_point_cloud(r"/home/robot/cleargrasp/data/captures/exp-010/output-point-cloud/000000000-output-pointcloud.ply")
+    print(type(point_cloud))
+    _, ind = point_cloud.remove_statistical_outlier(20, 2.0)
+    display_inlier_outlier(point_cloud, ind)
+    point_cloud = point_cloud.select_by_index(ind)
+    bounding_box = point_cloud.get_oriented_bounding_box()
 
-    # Read depth image
-    # rgbd_image = cv2.imread(r"C:\Users\davor\OneDrive\Desktop\VLATKA\exp\exp-004\output-depth\000000000-output-depth-rgb.png", cv2.IMREAD_UNCHANGED)
-    # Load the RGBD image from a PNG file
-    rgbd_image = o3d.io.read_image(r"C:\Users\davor\OneDrive\Desktop\VLATKA\exp\exp-004\output-depth\000000000-output-depth-rgb.png")
-
-
-
-    # Read segmentation image
-    # segmentation_image = o3d.io.read_image(r"C:\Users\davor\OneDrive\Desktop\VLATKA\exp\exp-004\result-viz\mask.png")
-
-    point_cloud = convert_to_point_cloud(rgbd_image)
-
-    # Save the point cloud to a PLY file
-    o3d.io.write_point_cloud(r"C:\Users\davor\OneDrive\Desktop\VLATKA\exp\PointCloud\pc1.ply", point_cloud)
+    o3d.visualization.draw_geometries([bounding_box, point_cloud])
+    
