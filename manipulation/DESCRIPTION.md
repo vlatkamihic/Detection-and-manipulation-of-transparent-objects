@@ -5,7 +5,7 @@
 ## Setting robot for object detection
 
 - in order to detect objects we need to set our robotic manipulator in some position from which the camera attached to the tool can see the scene
-- this is a hardcoded position implemented in method setStartingPosition() whit the next coordinates and quaternion:
+- this is a hardcoded position implemented in method <code>setStartingPosition()</code> whit the next coordinates and quaternion:
     - x = 0.12,
     - y = 0.044,
     - z = 0.66,
