@@ -16,4 +16,10 @@
 
 ## Setting robot for object manipulation
 
+- there are 3 steps needed in order to position our tool so it can grasp the object:
+1. Align the tool with the center of the object at a distance of ca 30cm
+2. Rotate the tool so the object can be grasped
+3. Move the tool to the object center (reduce the distance from 30cm to 5-10cm)
+
+- after these steps are done we can close the gripper and move the object
 
