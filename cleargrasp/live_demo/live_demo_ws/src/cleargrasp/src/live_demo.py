@@ -31,6 +31,8 @@ import message_filters
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge
 
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
+
 bridge = CvBridge()
 
 
@@ -133,14 +135,38 @@ class ClearGraspNode:
         # Get Frame. Expected format: ColorImg -> (H, W, 3) uint8, DepthImg -> (H, W) float64
         # color_img, input_depth = rcamera.get_data()
         # input_depth = input_depth.astype(np.float32)
-        rgb_image = bridge.imgmsg_to_cv2(rgb_msg, desired_encoding='passthrough')
-        depth_image = bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough').astype(np.float32)
+        rgb_image = bridge.imgmsg_to_cv2(rgb_msg, desired_encoding='passthrough') # desired_encoding='passthrough')
+        input_depth = bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough').astype(np.float32)
+        # rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)
+        # rgb_image = cv2.imread('/home/robot/Downloads/real-test/d435/000000000-transparent-rgb-img.jpg')
+        # input_depth = cv2.imread('/home/robot/Downloads/real-test/d435/000000000-transparent-depth-img.exr', cv2.IMREAD_ANYDEPTH)
+        
+        # rgb_image = cv2.imread('/home/robot/cleargrasp/eval_depth_completion/results/exp-000/input-image/000000000-rgb.png')
+        # input_depth = cv2.imread('/home/robot/cleargrasp/eval_depth_completion/results/exp-000/input-depth/000000000-modified-input-depth-rgb.png', cv2.IMREAD_ANYDEPTH).astype(np.float32)
+        
+        # ratio = np.amax(input_depth) / 256
+        # input_depth = (input_depth / ratio).astype('uint8')
+        # input_depth = input_depth.astype(np.float32)
+
+        # max_pixel = (np.asarray(input_depth)).astype(np.float32).max()
+        # input_depth /= max_pixel
+        # print(type(input_depth[0][0]))
+        input_depth /= 1000.0
+        
+        
+        
         # Normalize depth_image to the range 0-1
-        max_pixel = (np.asarray(depth_image)).astype(np.float32).max()
-        depth_image /= max_pixel
+        # input_depth_origin = input_depth.copy()
+
        
+
+        # Set invalid depth pixels to zero
+        # input_depth[np.isnan(input_depth)] = 0.0
+        # input_depth[np.isinf(input_depth)] = 0.0
+
+        # print(max_pixel)
         color_img = rgb_image
-        input_depth = depth_image.astype(np.float32)
+        
         
         # examples_dir = 'Example' + str(self.capture_num)
         # path = os.path.join('/home/robot/Detekcija-i-manipulacija-transparentnih-objekata/Examples', examples_dir)
@@ -156,13 +182,14 @@ class ClearGraspNode:
         # cv2.imwrite(os.path.join(path , 'input_depth.jpg'), input_depth)
 
         cv2.imshow('Live Demo', rgb_image)
-        cv2.imshow('Live Demo Depth', depth_image)
+        # cv2.imshow('Live Demo Depth', input_depth)
         
         
 
         # rospy.sleep(25.) 
         # cv2.destroyAllWindows()
         keypress = cv2.waitKey(10) & 0xFF
+        print("HELLO")
         if keypress == ord('q'):
             pass
         elif keypress == ord('c'):
@@ -179,9 +206,10 @@ class ClearGraspNode:
             except depth_completion_api.DepthCompletionError as e:
                 print('Depth Completion Failed:\n  {}\n  ...skipping image {}'.format(e, i))
                 pass
+            
 
             color_img = self.depthcomplete.input_image
-            input_depth = self.depthcomplete.input_depth
+            # input_depth = self.depthcomplete.input_depth
             surface_normals = self.depthcomplete.surface_normals
             surface_normals_rgb = self.depthcomplete.surface_normals_rgb
             occlusion_weight = self.depthcomplete.occlusion_weight
@@ -213,7 +241,7 @@ class ClearGraspNode:
             # Saving grid
             # cv2.imwrite(os.path.join(path , 'result_grid.jpg'), grid_image)
 
-            # cv2.imshow('Live Demo Capture', grid_image)
+            cv2.imshow('Live Demo Capture', grid_image)
             cv2.waitKey(0)
             # Save captured data to config.captures_dir
             self.depthcomplete.store_depth_completion_outputs(self.captures_dir,
