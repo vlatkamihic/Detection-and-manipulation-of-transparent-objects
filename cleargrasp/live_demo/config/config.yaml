@@ -33,10 +33,16 @@ depth2depth:
   pathExecutable: '/home/robot/cleargrasp/api/depth2depth/gaps/bin/x86_64/depth2depth'  # The path to the bash script that runs the depth2depth module.
   xres: 640  # Image Output Width
   yres: 480  # Image Output Height
-  fx: 570  # Focal length in pixels along width
-  fy: 314  # Focal length in pixels along height
-  cx: 320  # Center of image in pixels along width
-  cy: 240   # Center of image in pixels along height
+  fx: 597.9033203125  # Focal length in pixels along width
+  fy: 598.47998046875  # Focal length in pixels along height
+  cx: 323.8436584472656  # Center of image in pixels along width
+  cy: 236.32774353027344   # Center of image in pixels along height
+  # xres: 256  # Image Output Width
+  # yres: 144  # Image Output Height
+  # fx: 185 # Focal length in pixels along width
+  # fy: 185 # Focal length in pixels along height
+  # cx: 128 # Center of image in pixels along width
+  # cy: 72  # Center of image in pixels along height
   inertia_weight: 1000.0  # The strength of the penalty on the difference between the input and the output depth map on observed pixels. Set this value higher if you want to maintain the observed depth from input_depth.
   smoothness_weight: 0.0001  # The strength of the penalty on the difference between the depths of neighboring pixels. Higher smoothness weight will produce soap-film-like result.
   tangent_weight: 1  # The universal strength of the surface normal constraint. Higher tangent weight will force the output to have the same surface normal with the given one.

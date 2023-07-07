@@ -1,0 +1,4 @@
+int32 my_phase
+bool isFinished
+---
+bool isMyTurn

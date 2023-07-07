@@ -30,11 +30,14 @@ import rospy
 import message_filters
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge
+from cleargrasp.srv import CheckCurrentPhase, CheckCurrentPhaseResponse
+
 
 os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
 
 bridge = CvBridge()
-
+isFinished = False
+isMyTurn =  False
 
 class ClearGraspNode:
     def __init__(self):
@@ -52,23 +55,9 @@ class ClearGraspNode:
         depth_image_sub = message_filters.Subscriber('/camera/aligned_depth_to_color/image_raw', Image)
         info_sub = message_filters.Subscriber('/camera/color/camera_info', CameraInfo)
 
-        # parser = argparse.ArgumentParser(
-        #     description='Run live demo of depth completion on realsense camera')
-        # parser.add_argument('-c', '--configFile', required=True, help='Path to config yaml file', metavar='path/to/config.yaml')
-        # args = parser.parse_args()
 
         # Initialize Camera
         print('Running live demo of depth completion. Make sure realsense camera is streaming.\n')
-
-        # print(camera_info_msg.K)
-
-        # rcamera = camera.Camera()
-        # camera_intrinsics = rcamera.color_intr
-        # realsense_fx = camera_intrinsics[0, 0]
-        # realsense_fy = camera_intrinsics[1, 1]
-        # realsense_cx = camera_intrinsics[0, 2]
-        # realsense_cy = camera_intrinsics[1, 2]
-        # time.sleep(1)  # Give camera some time to load data
 
         
         # # Create directory to save captures
@@ -123,71 +112,36 @@ class ClearGraspNode:
         ts = message_filters.TimeSynchronizer([rgb_image_sub, depth_image_sub, info_sub], 10)
         ts.registerCallback(self.callback)
         cv2.destroyAllWindows()
-
         rospy.spin()
+
+        
+
 
 
     def callback(self, rgb_msg, depth_msg, camera_info_msg):
-        self.main(rgb_msg, depth_msg, camera_info_msg)
+        global isFinished
+        global isMyTurn
+        rospy.wait_for_service('check_current_phase')
+        current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
+        isMyTurn = (current_phase(0, isFinished)).isMyTurn
+        # print("My turn: "+str(isMyTurn)+" , finished: "+str(isFinished)+", data type: "+str(type(isMyTurn))+", "+str(type(isFinished)))
+        if(isMyTurn == True and isFinished == False):
+            print("Usao u main")
+            self.main(rgb_msg, depth_msg, camera_info_msg)
+        
 
 
     def main(self, rgb_msg, depth_msg, camera_info_msg):
-        # Get Frame. Expected format: ColorImg -> (H, W, 3) uint8, DepthImg -> (H, W) float64
-        # color_img, input_depth = rcamera.get_data()
-        # input_depth = input_depth.astype(np.float32)
+        global isFinished
+
         rgb_image = bridge.imgmsg_to_cv2(rgb_msg, desired_encoding='passthrough') # desired_encoding='passthrough')
         input_depth = bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough').astype(np.float32)
-        # rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)
-        # rgb_image = cv2.imread('/home/robot/Downloads/real-test/d435/000000000-transparent-rgb-img.jpg')
-        # input_depth = cv2.imread('/home/robot/Downloads/real-test/d435/000000000-transparent-depth-img.exr', cv2.IMREAD_ANYDEPTH)
-        
-        # rgb_image = cv2.imread('/home/robot/cleargrasp/eval_depth_completion/results/exp-000/input-image/000000000-rgb.png')
-        # input_depth = cv2.imread('/home/robot/cleargrasp/eval_depth_completion/results/exp-000/input-depth/000000000-modified-input-depth-rgb.png', cv2.IMREAD_ANYDEPTH).astype(np.float32)
-        
-        # ratio = np.amax(input_depth) / 256
-        # input_depth = (input_depth / ratio).astype('uint8')
-        # input_depth = input_depth.astype(np.float32)
 
-        # max_pixel = (np.asarray(input_depth)).astype(np.float32).max()
-        # input_depth /= max_pixel
-        # print(type(input_depth[0][0]))
         input_depth /= 1000.0
-        
-        
-        
-        # Normalize depth_image to the range 0-1
-        # input_depth_origin = input_depth.copy()
-
-       
-
-        # Set invalid depth pixels to zero
-        # input_depth[np.isnan(input_depth)] = 0.0
-        # input_depth[np.isinf(input_depth)] = 0.0
-
-        # print(max_pixel)
         color_img = rgb_image
-        
-        
-        # examples_dir = 'Example' + str(self.capture_num)
-        # path = os.path.join('/home/robot/Detekcija-i-manipulacija-transparentnih-objekata/Examples', examples_dir)
-        # try:
-        #         os.mkdir(path)
-        # except OSError as exc:
-        #     if exc.errno != errno.EEXIST:
-        #         raise
-        #     pass
-
-        # # Saving images
-        # cv2.imwrite(os.path.join(path , 'input_rgb.jpg'), rgb_image)
-        # cv2.imwrite(os.path.join(path , 'input_depth.jpg'), input_depth)
-
+        print("Trebam prikazati sliku")
         cv2.imshow('Live Demo', rgb_image)
-        # cv2.imshow('Live Demo Depth', input_depth)
-        
-        
 
-        # rospy.sleep(25.) 
-        # cv2.destroyAllWindows()
         keypress = cv2.waitKey(10) & 0xFF
         print("HELLO")
         if keypress == ord('q'):
@@ -209,7 +163,7 @@ class ClearGraspNode:
             
 
             color_img = self.depthcomplete.input_image
-            # input_depth = self.depthcomplete.input_depth
+            input_depth = self.depthcomplete.input_depth
             surface_normals = self.depthcomplete.surface_normals
             surface_normals_rgb = self.depthcomplete.surface_normals_rgb
             occlusion_weight = self.depthcomplete.occlusion_weight
@@ -250,6 +204,7 @@ class ClearGraspNode:
                                                          max_depth=self.config.depthVisualization.maxDepth)
             print('captured image {0:06d}'.format(self.capture_num))
             self.capture_num += 1
+            isFinished = True
 
 
 
