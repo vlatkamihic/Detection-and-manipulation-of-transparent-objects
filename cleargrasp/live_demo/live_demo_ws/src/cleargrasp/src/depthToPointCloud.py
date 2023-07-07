@@ -65,7 +65,7 @@ if __name__ == '__main__':
     unit_normal= normal / np.linalg.norm(normal)
     unit_yaxis = yaxis / np.linalg.norm(yaxis)
     dot_product = np.dot(unit_normal, unit_yaxis)
-    angle = np.arccos(dot_product)
+    angle = -np.arccos(dot_product)
     # angle = 1.57079632679
     print(angle)
     rotation_matrix = np.matrix([[1, 0, 0],
