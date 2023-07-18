@@ -12,6 +12,6 @@ ClearGrasp network model is updated and changed so it works with RealSense Lidar
 Changes made to the ClearGrasp repo are placed into to [cleargrasp](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/tree/main/cleargrasp/live_demo) folder.
 
 TO DO:
-- normala stola
-- maknuti outliere
-- 
+- dodati obradu rezultata detekcije i manipulaciju u .launch file
+- kalibrirati kameru
+- dovrsiti skriptu za manipulaciju
