@@ -4,10 +4,15 @@ import moveit_commander, geometry_msgs.msg, moveit_msgs.msg, rospy, sys
 import roslib
 from time import time
 from trac_ik_python.trac_ik import IK 
-
+import os
+import glob
 roslib.load_manifest('robotiq_3f_gripper_control')
 
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
+from cleargrasp.srv import CheckCurrentPhase
+
+isFinished = False
+isMyTurn =  False
 
 class RobotControl:
     def __init__(self):
@@ -158,11 +163,21 @@ class RobotControl:
         self.setPosition(0.12, 0.044, 0.66, 0, -0.94, -0.342, 0)
         print("Position set to starting point!")
 
+def wait_for_step_2():
+    global isFinished
+    global isMyTurn
+    
+    while(isMyTurn == False):
+        current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
+        isMyTurn = (current_phase(2, isFinished)).isMyTurn
+
 if __name__ == '__main__':
     
-    # instanca upravljaca robotom
+    wait_for_step_2()
 
+    # instanca upravljaca robotom
     RC = RobotControl()
+
     # plan=RC.setPosition(-0.4, -0.4, 0.8)
     # RC.executeTrajectory(plan)
 
@@ -176,24 +191,35 @@ if __name__ == '__main__':
     # RC.executeTrajectory(plan)
 
 
-
     # Tocka 1
     
     #RC.executeTrajectory(plan)
 
     RC.setStartingPosition()
+
+    dir_path = "/home/robot/cleargrasp/data/captures/"
+    runs = sorted(glob.glob(os.path.join(dir_path, 'exp-*')))
+    prev_run_id = int(runs[-1].split('-')[-1]) if runs else 0
     
+    path = dir_path + "exp-0" + str(prev_run_id) + "/"
+    result_folder_path = path + "result-center-and-dimensions/"
+
+    center_file = open(result_folder_path + "center.txt", "r")
+    dimensions_file = open(result_folder_path + "dimensions.txt", "r")
+
+    center = center_file.read()
+
     # Centar objekta (u odnosu na bazu)
 
-    x = -0.05 #m
-    y = 0.62 #m
-    z = 0.16 #m
+    x = center[0] #m
+    y = center[1] #m
+    z = center[2] #m
 
     # Dimenzije objekta
 
-    l = 0.09 #m
-    w = 0.09 #m
-    h = 0.32 #m
+    l = dimensions_file.readline() #m
+    w = dimensions_file.readline() #m
+    h = dimensions_file.readline() #m
 
 
     # Hvatanje objekta
@@ -299,5 +325,8 @@ if __name__ == '__main__':
     print("Sequence done!")
 
     rospy.spin()
- 
 
+    if rospy.is_shutdown:
+        isFinished = True
+        current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
+        isMyTurn = (current_phase(2, isFinished)).isMyTurn
