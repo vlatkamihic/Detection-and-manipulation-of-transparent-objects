@@ -1,0 +1,8 @@
+prefix=/home/robot/calibration_ws/install
+
+Name: calibration_program
+Description: Description of calibration_program
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
