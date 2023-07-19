@@ -17,3 +17,10 @@ TO DO:
 - dovrsiti skriptu za manipulaciju
 
 RUNNING PROGRAMM:
+```
+cd cleargrasp/live_demo/live_demo_ws/
+source devel/setup.bash
+export PYTHONPATH="$PYTHONPATH:/home/robot/cleargrasp"
+source /home/robot/catkin_ws/devel/setup.bash --extend
+roslaunch cleargrasp detect.launch
+```
