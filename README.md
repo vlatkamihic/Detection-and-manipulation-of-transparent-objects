@@ -15,3 +15,5 @@ TO DO:
 - dodati obradu rezultata detekcije i manipulaciju u .launch file
 - kalibrirati kameru
 - dovrsiti skriptu za manipulaciju
+
+RUNNING PROGRAMM:
