@@ -107,7 +107,13 @@ if __name__ == '__main__':
     runs = sorted(glob.glob(os.path.join(dir_path, 'exp-*')))
     prev_run_id = int(runs[-1].split('-')[-1]) if runs else 0
     
-    path = dir_path + "exp-0" + str(prev_run_id) + "/"
+    if prev_run_id < 10:
+        path = dir_path + "exp-00" + str(prev_run_id) + "/"
+    elif prev_run_id > 10 and prev_run_id < 100:
+        path = dir_path + "exp-0" + str(prev_run_id) + "/"
+    else:
+        path = dir_path + "exp-" + str(prev_run_id) + "/"
+    
 
     center, length, width, height = get_object_center_and_dimensions(path)
 
