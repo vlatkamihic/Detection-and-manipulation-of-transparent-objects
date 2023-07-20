@@ -6,6 +6,7 @@ from time import time
 from trac_ik_python.trac_ik import IK 
 import os
 import glob
+import numpy as np
 roslib.load_manifest('robotiq_3f_gripper_control')
 
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
@@ -171,6 +172,21 @@ def wait_for_step_2():
         current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
         isMyTurn = (current_phase(2, isFinished)).isMyTurn
 
+def transform(point):
+    transformation_matrix = np.matrix([[0.03337431515055133,  -0.4408604975735485,    0.8715525306984567,   -0.8894262002271308],
+    [-0.9758393828489554,    0.021754876424220235,  0.048372112132777374,  0.5908410028678681],
+    [-0.04122245709138153,  -0.8719199412964584,   -0.43946781679706426,   0.5256948658953127],
+    [ 0.0, 0.0, 0.0, 1.0]])
+
+    P = np.append(point, 1)
+    transformed = np.dot(transformation_matrix, P)
+    # Transformacija točke pomoću transformacijske matrice
+    xT = transformed[0, 0]
+    yT = transformed[0, 1]
+    zT = transformed[0, 2]
+
+    return xT, yT, zT
+    
 if __name__ == '__main__':
     
     wait_for_step_2()
@@ -201,26 +217,46 @@ if __name__ == '__main__':
     runs = sorted(glob.glob(os.path.join(dir_path, 'exp-*')))
     prev_run_id = int(runs[-1].split('-')[-1]) if runs else 0
     
-    path = dir_path + "exp-0" + str(prev_run_id) + "/"
+    if prev_run_id < 10:
+        path = dir_path + "exp-00" + str(prev_run_id) + "/"
+    elif prev_run_id > 10 and prev_run_id < 100:
+        path = dir_path + "exp-0" + str(prev_run_id) + "/"
+    else:
+        path = dir_path + "exp-" + str(prev_run_id) + "/"
+    path = dir_path + "exp-007"  + "/"
     result_folder_path = path + "result-center-and-dimensions/"
 
     center_file = open(result_folder_path + "center.txt", "r")
     dimensions_file = open(result_folder_path + "dimensions.txt", "r")
 
-    center = center_file.read()
+    # Remove the square brackets from the string
+    center = (center_file.read()).strip('[]')
+
+    # Convert the cleaned string to a NumPy array
+    center = np.fromstring(center, sep=' ')
 
     # Centar objekta (u odnosu na bazu)
 
-    x = center[0] #m
-    y = center[1] #m
-    z = center[2] #m
+    x = float(center[0]) #m
+    y = float(center[1]) #m
+    z = float(center[2]) #m
+    print("x: " + str(x))
+    print("y: " + str(y))
+    print("z: " + str(z))
+    point = np.array([x, y, z])
 
+    print("point: " + str(point))
+
+    xT, yT, zT = transform(point)
+    print(xT)
+    print(yT)
+    print(zT)
+    
     # Dimenzije objekta
 
-    l = dimensions_file.readline() #m
-    w = dimensions_file.readline() #m
-    h = dimensions_file.readline() #m
-
+    l = float(dimensions_file.readline()) #m
+    w = float(dimensions_file.readline()) #m
+    h = float(dimensions_file.readline()) #m
 
     # Hvatanje objekta
     # Sastoji se od 3 faze:
@@ -230,103 +266,15 @@ if __name__ == '__main__':
 
     # Hvatanje uspravne boce - udaljavanje po x i z osi
 
-    RC.setPosition(x+(l / 2)+0.25, y - w, z + 0.3, 0, 1, 0, 0)
+    RC.setPosition(x, y, z, 0, 1, 0, 0)
     
-    # Rotiranje alata
-
-    RC.setPosition(x+(l / 2)+0.25, y - w, z + 0.3, -0.924, -0.383, 0, 0)
 
     # RC.setPosition(0.195, 0.575, 0.302, 0.721, 0.381, -0.518, 0.26)
     
-
-    # RC.setPosition(0.2, 0.5, 0.5)
-    # print("Finished point 1.")
-
-    # # # Otvori gripper
-    # RC.openGripper()
-    # print("Finished point 2.")
-
-    # RC.setPosition(0.2, 0.5, 0.4)
-    # print("Finished point 1.")
- 
-    # #RC.setPosition(0.2, 0.6, 0.40)
-    # #print("Finished point 3.")
-
-    # # Zatvori gripper
-    # RC.closeGripper()
-    # print("Finished point 4.")
-
-    # RC.setPosition(0.2, 0.5, 0.5)
-    # print("Finished point 1.")
-
-    # RC.setPosition(-0.3, 0.5, 0.5)
-    # print("Finished point 1.")
-
-    # RC.openGripper()
-    # print("Finished point 2.")
-
-    #RC.setPosition(0.2, 0.6, 0.5)
-    #print("Finished point 5.")
-
-    #RC.setPosition(0, 0.5, 0.6)
-    #print("Finished point 6.")
-
-    #RC.openGripper()
-    #print("Finished point 7.")
-
-    #RC.setPosition(0.2, 0.6, 0.5)
-    #print("Finished ALL.")
-
-
-
-    # Tocka 2
-    # plan = RC.setPosition(-0.3, -0.30, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 2.")
-
-    # # Tocka 3
-    # plan = RC.setPosition(-0.2, -0.20, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 3.")
-
-    # # Tocka 4
-    # plan = RC.setPosition(-0.25, -0.10, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 4.")
-
-    # # Tocka 5
-    # plan = RC.setPosition(-0.25, 0, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 5.")
-
-    # # Tocka 6
-    # plan = RC.setPosition(-0.1, 0.3, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 6.")
-
-    # # Tocka 7
-    # plan = RC.setPosition(0.0, 0.5, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 7.")
-
-    # # Tocka 8
-    # plan = RC.setPosition(0.1, 0.6, 0.6)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 8.")
-
-    # # Tocka 9 - zadnja tocka
-    # plan = RC.setPosition(0.1, 0.7, 0.8)
-    # RC.executeTrajectory(plan)
-    # print("Finished point 9.")
-
-    # Otvori gripper
-    #RC.openGripper()
-
     print("Sequence done!")
 
     rospy.spin()
 
-    if rospy.is_shutdown:
-        isFinished = True
-        current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
-        isMyTurn = (current_phase(2, isFinished)).isMyTurn
+    isFinished = True
+    current_phase = rospy.ServiceProxy('check_current_phase', CheckCurrentPhase)
+    isMyTurn = (current_phase(2, isFinished)).isMyTurn
