@@ -9,7 +9,20 @@
      <arg name="color_fps" value="15" />
      <arg name="align_depth" value="true" />
   </include>
+  <include file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
+    <arg name="robot_ip" value="192.168.22.14"/>
+    <arg name="kinematics_config" value="/home/$(env USER)/my_robot_calibration.yaml"/>
+  </include>
+  <!--include file="$(find ur5_moveit_config)/launch/ur5_moveit_planning_execution.launch"/>
+  <include file="$(find ur5_moveit_config)/launch/moveit_rviz.launch"/-->
+  <node name="gripper_control" pkg="robotiq_3f_gripper_control" type="Robotiq3FGripperTcpNode.py" args="192.168.22.11"/>
+
+
   <node pkg="cleargrasp" name="check_current_phase_server" type="handle_experiment.py" output="screen"/>
   <node pkg="cleargrasp" name="live_demo_node" type="live_demo.py" output="screen"/>
   <node pkg="cleargrasp" name="get_center_and_dimensions" type="get_center_and_dimensions.py" output="screen"/>
+  <node pkg="labus" name="move_robot" type="move_robot.py" output="screen"/>
+
+
+
 </launch>
