@@ -81,9 +81,12 @@ class RobotControl:
 
         current_joints = self.move_group.get_current_joint_values()
         goal_joints = self.ik.get_ik(current_joints, x, y, z, qx, qy, qz, qw)
+        
+        # print('Pose: ')
+        # print(self.move_group.get_current_pose().pose)
 
-        print("Inverse kin:")
-        print(goal_joints)
+        # print("Inverse kin:")
+        # print(goal_joints)
 
         joint_goal = self.move_group.get_current_joint_values()
         joint_goal[0] = goal_joints[0]
@@ -128,13 +131,13 @@ class RobotControl:
     def closeGripper(self):
 
         command = Robotiq3FGripperRobotOutput()
-        command.rACT = 1
-        command.rGTO = 1
-        command.rSPA = 255
-        command.rFRA = 150
-        command.rATR = 0
-        command.rMOD = 1
-        command.rPRA = 100
+        command.rACT = 1 # (engl. Action Request) - 0 ili 1
+        command.rGTO = 1 # (engl. Go To) - 0 ili 1
+        command.rSPA = 255 # (engl. Speed (finger A)) - 0 do 255
+        command.rFRA = 50 #  (engl. Force (finger A)) - 0 do 255
+        command.rATR = 0 # (engl. Automatic Release) - 0 ili 1
+        command.rMOD = 1 # (engl. Gripper Mode) - 0 do 3
+        command.rPRA = 100 #  (engl. Position Request (Finger A)) - 0 do 255
         
         # Delay od 3 sekunde da se saka zatvori
         start_time = time()
@@ -173,13 +176,16 @@ def wait_for_step_2():
         isMyTurn = (current_phase(2, isFinished)).isMyTurn
 
 def transform(point):
-    transformation_matrix = np.matrix([[0.03337431515055133,  -0.4408604975735485,    0.8715525306984567,   -0.8894262002271308],
-    [-0.9758393828489554,    0.021754876424220235,  0.048372112132777374,  0.5908410028678681],
-    [-0.04122245709138153,  -0.8719199412964584,   -0.43946781679706426,   0.5256948658953127],
-    [ 0.0, 0.0, 0.0, 1.0]])
+    transformation_matrix = np.matrix([[ 0.011134993096219537, -0.4265458347569073,    0.8800191123863065,   -0.9008058369236389  ],
+    [-0.9770448284683437,    0.03288445435089571,   0.028301788109787576,  0.6169276026386865  ],
+    [-0.04193316678852926,  -0.8794749791202019,  -0.4257515073484868,    0.5162731031956954  ],
+    [ 0.0,                    0.0,                    0.0,                    1.                  ]])
 
-    P = np.append(point, 1)
-    transformed = np.dot(transformation_matrix, P)
+    # P = np.append(point, 1)
+    # transformed = np.dot(transformation_matrix, P)
+    point = np.append(point, 1)
+    transformed = transformation_matrix@point
+    # transformed = transformation_matrix@P
     # Transformacija točke pomoću transformacijske matrice
     xT = transformed[0, 0]
     yT = transformed[0, 1]
@@ -223,11 +229,10 @@ if __name__ == '__main__':
         path = dir_path + "exp-0" + str(prev_run_id) + "/"
     else:
         path = dir_path + "exp-" + str(prev_run_id) + "/"
-    path = dir_path + "exp-007"  + "/"
     result_folder_path = path + "result-center-and-dimensions/"
-
+    print("Result path: " + path)
     center_file = open(result_folder_path + "center.txt", "r")
-    dimensions_file = open(result_folder_path + "dimensions.txt", "r")
+    # dimensions_file = open(result_folder_path + "dimensions.txt", "r")
 
     # Remove the square brackets from the string
     center = (center_file.read()).strip('[]')
@@ -240,23 +245,23 @@ if __name__ == '__main__':
     x = float(center[0]) #m
     y = float(center[1]) #m
     z = float(center[2]) #m
-    print("x: " + str(x))
-    print("y: " + str(y))
-    print("z: " + str(z))
+    # print("x: " + str(x))
+    # print("y: " + str(y))
+    # print("z: " + str(z))
     point = np.array([x, y, z])
 
     print("point: " + str(point))
 
     xT, yT, zT = transform(point)
-    print(xT)
-    print(yT)
-    print(zT)
+    print("xT: " + str(xT))
+    print("yT: " + str(yT))
+    print("zT: " + str(zT))
     
-    # Dimenzije objekta
+    # # Dimenzije objekta
 
-    l = float(dimensions_file.readline()) #m
-    w = float(dimensions_file.readline()) #m
-    h = float(dimensions_file.readline()) #m
+    # l = float(dimensions_file.readline()) #m
+    # w = float(dimensions_file.readline()) #m
+    # h = float(dimensions_file.readline()) #m
 
     # Hvatanje objekta
     # Sastoji se od 3 faze:
@@ -264,10 +269,16 @@ if __name__ == '__main__':
     # 2. Okrenuti alat tako da se objekt može uhvatiti 
     # 3. Pomaknuti alat u središte objekta (smanjiti udaljenost s 30 cm na 5-10 cm pogodnih za hvatanje)
 
-    # Hvatanje uspravne boce - udaljavanje po x i z osi
-
-    RC.setPosition(x, y, z, 0, 1, 0, 0)
+    # Hvatanje uspravne boce
     
+    RC.openGripper()
+    RC.setPosition(xT, yT, zT+0.3, 0, 1, 0, 0)
+    RC.closeGripper()
+    
+    # Pomicanje boce u kutiju
+
+    RC.setPosition(-0.15, 0.3, zT+0.3, 0, 1, 0, 0)
+    RC.openGripper()
 
     # RC.setPosition(0.195, 0.575, 0.302, 0.721, 0.381, -0.518, 0.26)
     
