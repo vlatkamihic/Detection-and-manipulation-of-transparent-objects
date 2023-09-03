@@ -381,9 +381,19 @@ class DepthToDepthCompletion(object):
         output_depth_filename = os.path.join(output_depth_dir, output_depth_filename)
         utils.exr_saver(output_depth_filename, self.output_depth, ndim=3)
 
+        kernel = np.ones((5, 5), np.uint8)
+        img_erosion = cv2.erode(self.mask_predicted, kernel, iterations=5)
+
+        output_depth_object = img_erosion * self.output_depth
+        
         output_ptcloud_filename = ('{:09d}'.format(files_prefix) + self.FOLDER_MAP['output-point-cloud']['postfix'])
         output_ptcloud_filename = os.path.join(output_ptcloud_dir, output_ptcloud_filename)
         utils.write_point_cloud(output_ptcloud_filename, self.surface_normals_rgb, self.output_depth, self.fx, self.fy,
+                                self.cx, self.cy)
+
+        output_ptcloud_object_filename = "output-point-cloud-object.ply"
+        output_ptcloud_object_filename = os.path.join(output_ptcloud_dir, output_ptcloud_object_filename)
+        utils.write_point_cloud(output_ptcloud_object_filename, self.surface_normals_rgb, output_depth_object, self.fx, self.fy,
                                 self.cx, self.cy)
 
         # Store Masks
