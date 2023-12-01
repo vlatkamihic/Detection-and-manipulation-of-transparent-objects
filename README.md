@@ -3,7 +3,8 @@
 Determining the three-dimensional shape and position of transparent objects for the purpose of robotic manipulation
 
 To clone this repo:
-<code>git clone https://PersonalAccessToken@github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata</code>
+<code>git clone https://PersonalAccessToken@github.com/vlatkamihic/Detection-and-manipulation-of-transparent-objects</code>
+Paper: https://urn.nsk.hr/urn:nbn:hr:200:906497
 
 ### [ClearGrasp](https://github.com/Shreeyak/cleargrasp) neural network-based approach for 3D object detection and segmentation from RGB-D images
 
