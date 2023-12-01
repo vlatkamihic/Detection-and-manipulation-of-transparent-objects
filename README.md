@@ -11,7 +11,7 @@ Paper: https://urn.nsk.hr/urn:nbn:hr:200:906497
 
 The network is used for 3D transparent object detection which will be used for their manipulation.
 ClearGrasp network model is updated and changed so it works with RealSense Lidar L515 camera and ROS.
-Changes made to the ClearGrasp repo are placed into to [cleargrasp](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/tree/main/cleargrasp/live_demo) folder.
+Changes made to the ClearGrasp repo are placed into the [cleargrasp](https://github.com/vlatkamihic/Detekcija-i-manipulacija-transparentnih-objekata/tree/main/cleargrasp/live_demo) folder.
 
 
 RUNNING PROGRAMM:
