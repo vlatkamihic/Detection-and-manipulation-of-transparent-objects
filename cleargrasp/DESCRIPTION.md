@@ -58,3 +58,8 @@ rosrun cleargrasp live_demo.py
 9. For the whole process to run once again you have to press any key on any opened image. After this you can once again repeat the step number 8.
 
 ### Running the programm with launch file
+<code> cd cleargrasp/live_demo/live_demo_ws/
+source devel/setup.bash
+export PYTHONPATH="$PYTHONPATH:/home/robot/cleargrasp"
+source /home/robot/catkin_ws/devel/setup.bash --extend
+roslaunch cleargrasp detect.launch<code>
